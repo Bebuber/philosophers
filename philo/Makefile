@@ -6,7 +6,7 @@
 #    By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/28 17:58:43 by bebuber           #+#    #+#              #
-#    Updated: 2024/06/28 18:04:42 by bebuber          ###   ########.fr        #
+#    Updated: 2024/06/30 13:26:06 by bebuber          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ SRC = main.c \
 OBJ = $(SRC:.c=.o)
 
 CC = CC
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -pthread -g
 RM = rm -f
 
 all: $(NAME)
