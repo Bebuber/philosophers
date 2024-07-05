@@ -6,16 +6,17 @@
 #    By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/28 17:58:43 by bebuber           #+#    #+#              #
-#    Updated: 2024/06/30 13:26:06 by bebuber          ###   ########.fr        #
+#    Updated: 2024/07/05 10:53:57 by bebuber          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 SRC = main.c \
-		philo.c \
 		utils.c \
-		threads.c
+		routine.c \
+		init.c \
+		ft_atoi.c
 
 OBJ = $(SRC:.c=.o)
 

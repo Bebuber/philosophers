@@ -6,133 +6,82 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:02:13 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/04 14:59:55 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/07/05 12:27:14 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	error(char *str)
-{
-	printf("%s", str);
-	exit(1);
-}
-
-void	check_args(int argc, char **argv, t_data *data)
+int	check_args(int argc, char **argv)
 {
 	int	i;
+	int	j;
 
 	i = 1;
+	j = 0;
 	if (argc != 5 && argc != 6)
-		error("Error: wrong number of arguments\n");
+		error("Error: wrong number of arguments\n", NULL);
 	while (i < argc)
 	{
-		if (atoi(argv[i]) < 0)
-			error("Error: invalid argument\n");
+		j = 0;
+		while (argv[i][j])
+		{
+			if (!if_number(argv[i][j]))
+				error("Error: invalid argument\n", NULL);
+			j++;
+		}
 		i++;
 	}
-	data->nb_philo = atoi(argv[1]);
-	data->nb_forks = data->nb_philo;
-	data->tm_to_die = atoi(argv[2]);
-	data->tm_to_eat = atoi(argv[3]);
-	data->tm_to_sleep = atoi(argv[4]);
-	if (argc == 6)
-		data->nb_meals = atoi(argv[5]);
-	else
-		data->nb_meals = -1;
+	return (0);
 }
 
-void	*m_alloc(size_t size)
+int	special_case(t_data *data)
 {
-	void	*ptr;
+	unsigned long	time;
 
-	ptr = malloc(size);
-	if (!ptr)
-		error("Error: malloc failed\n");
-	return (ptr);
+	time = get_time() - data->start;
+	printf("%lu 1 has taken a fork\n", time);
+	usleep(data->tm_to_die * 1000);
+	time = get_time() - data->start;
+	printf("%lu 1 died\n", time);
+	ft_exit(data);
+	return (0);
 }
 
-void	try_print(pthread_mutex_t print, int id, char *str)
-{
-	struct timeval	time;
-	
-	pthread_mutex_lock(&print);
-	printf("%d %s\n", id, str);
-	pthread_mutex_unlock(&print);
-}
-
-void	let_philos_sleap(t_data *data, t_philo *philo, int time)
+void	ft_exit(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	while (i < data->nb_philo)
-	{
-		if (philo->id % 2 == 0)
-			usleep(time);
-		i++;
-	}
+	while (i < data->nb_forks)
+		pthread_mutex_destroy(&data->forks[i++]);
+	pthread_mutex_destroy(&data->print);
+	if (data->philo)
+		free(data->philo);
+	if (data->forks)
+		free(data->forks);
 }
 
-void	let_philo_eat(t_data *data, t_philo *philo)
+void	error(char *str, t_data *data)
 {
-	pthread_mutex_lock(&data->forks[philo->right_fork]);
-	try_print(data->print, philo->id, "has taken a fork");
-	pthread_mutex_lock(&data->forks[philo->left_fork]);
-	try_print(data->print, philo->id, "has taken a fork");
-	try_print(data->print, philo->id, "is eating");
-	usleep(data->tm_to_eat * 1000);
-	
-}
-
-void	*routine(void *arg)
-{
-	t_philo			*philo;
-	t_data			*data;
-	int				i;
-
-	philo = (t_philo *)arg;
-	data = philo->data;
-	data->start = gettimeofday();
-	pthread_mutex_init(&data->print, NULL);
-	let_philos_sleap(data, philo, data->tm_to_eat / 2);
-	let_philo_eat(data, philo);
-
-		usleep(data->tm_to_eat * 1000);
-		pthread_mutex_unlock(&data->forks[philo->right_fork]);
-		pthread_mutex_unlock(&data->forks[philo->left_fork]);
-		printf("%d is sleeping\n", philo->id);
-		usleep(data->tm_to_sleep * 1000);
-		printf("%d is thinking\n", philo->id);
-
+	printf("%s", str);
+	if (data)
+		ft_exit(data);
+	exit (1);
 }
 
 int	main(int argc, char **argv)
 {
 	t_data	data;
-	t_philo	*philo;
-	int		i;
 
-	i = 0;
-	check_args(argc, argv, &data);
-	philo = (t_philo *)m_alloc(sizeof(t_philo) * data.nb_philo);
-	data.philo = philo;
-	data.forks = (pthread_mutex_t *) \
-	m_alloc(sizeof(pthread_mutex_t) * data.nb_forks);
-	while (i < data.nb_forks)
-		pthread_mutex_init(&data.forks[i++], NULL);
-	gettimeofday(data.start, NULL);
-	i = 0;
-	while (i < data.nb_philo)
-	{
-		philo[i].id = i + 1;
-		philo[i].right_fork = i;
-		philo[i].left_fork = (i + 1) % data.nb_forks;
-		philo[i].data = &data;
-		pthread_create(&philo[i].thread, NULL, &routine, &philo[i++]);
-	}
-	i = 0;
-	while (i < data.nb_philo)
-		pthread_join(philo[i++].thread, NULL);
+	if (check_args(argc, argv))
+		return (1);
+	if (init_data(&data, argc, argv))
+		return (1);
+	if (data.nb_philo == 1)
+		return (special_case(&data));
+	if (init_threads(&data))
+		return (1);
+	ft_exit(&data);
 	return (0);
 }
