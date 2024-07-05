@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:28:32 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 14:57:25 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/07/05 18:10:43 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,34 +38,41 @@ void	philos_eat(t_data data, t_philo *philo)
 	pthread_mutex_unlock(&data.forks[philo->left_fork]);
 }
 
-int	do_philos_die(t_data data, t_philo *philo)
+int	do_philos_die(t_data *data, t_philo *philo)
 {
-	if (get_time() - philo->last_meal >= philo->time_to_die)
+	unsigned long	left_time;
+	unsigned long	last_meal;
+
+	last_meal = philo->last_meal;
+	if (last_meal)
+		left_time = get_time() - last_meal;
+	else
+		left_time = get_time() - data->start;
+	if (left_time >= philo->time_to_die)
 	{
-		pthread_mutex_lock(&data.death_mutex);
-		if (data.death == 0)
-		{
-			data.death = 1;
-			try_print(data, philo->id, "died", get_time());
-		}
-		pthread_mutex_unlock(&data.death_mutex);
+		pthread_mutex_lock(&data->death_mutex);
+		if (data->death == 0)
+			try_print(*data, philo->id, "died", get_time());
+		data->death = 1;
+		pthread_mutex_unlock(&data->death_mutex);
 		return (1);
 	}
 	return (0);
 }
 
-void	wait_philos_wait(t_data data, int time)
-{
-	int	i;
+// int	check_death(t_data *data)
+// {
+// 	int	i;
 
-	i = 0;
-	while (i < data.nb_philo)
-	{
-		if (data.philo[i].id % 2 == 0)
-			ft_sleep(get_time(), time);
-		i++;
-	}
-}
+// 	i = 0;
+// 	while (i < data->nb_philo)
+// 	{
+// 		if (data->philo[i].dead == 1)
+// 			return (1);
+// 		i++;
+// 	}
+// 	return (0);
+// }
 
 void	*routine(void *arg)
 {
@@ -74,17 +81,22 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	data = philo->data;
-	wait_philos_wait(*data, data->tm_to_eat / 2);
+	if (philo->id % 2 == 0)
+		ft_sleep(get_time(), data->tm_to_eat / 2);
 	while (data->death == 0)
 	{
+		if (do_philos_die(data, philo))
+			break ;
 		philos_eat(*data, philo);
+		// if (check_death(data))
+		// 	break ;
+		philos_sleap(*data, philo);
+		// if (check_death(data))
+		// 	break ;
 		if (data->nb_meals != -1 && philo->meals == data->nb_meals)
 			break ;
-		philos_sleap(*data, philo);
 		if (get_time() - philo->last_meal < philo->time_to_die)
 			try_print(*data, philo->id, "is thinking", get_time());
-		if (do_philos_die(*data, philo))
-			break ;
 	}
 	return (NULL);
 }
