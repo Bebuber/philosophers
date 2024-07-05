@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:02:13 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 12:27:14 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/07/05 15:15:24 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ int	check_args(int argc, char **argv)
 int	special_case(t_data *data)
 {
 	unsigned long	time;
+	unsigned long	start;
 
-	time = get_time() - data->start;
+	start = get_time();
+	time = get_time() - start;
 	printf("%lu 1 has taken a fork\n", time);
-	usleep(data->tm_to_die * 1000);
-	time = get_time() - data->start;
+	ft_sleep(get_time(), data->tm_to_die);
+	time = get_time() - start;
 	printf("%lu 1 died\n", time);
 	ft_exit(data);
 	return (0);
@@ -56,6 +58,7 @@ void	ft_exit(t_data *data)
 	while (i < data->nb_forks)
 		pthread_mutex_destroy(&data->forks[i++]);
 	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->death_mutex);
 	if (data->philo)
 		free(data->philo);
 	if (data->forks)
@@ -67,6 +70,7 @@ void	error(char *str, t_data *data)
 	printf("%s", str);
 	if (data)
 		ft_exit(data);
+	// system("leaks philo");
 	exit (1);
 }
 
@@ -83,5 +87,6 @@ int	main(int argc, char **argv)
 	if (init_threads(&data))
 		return (1);
 	ft_exit(&data);
+	// system("leaks philo");
 	return (0);
 }

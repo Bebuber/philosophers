@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 17:58:47 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 12:36:56 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/07/05 13:52:49 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ typedef struct s_philo
 	int				right_fork;
 	int				left_fork;
 	int				dead;
+	unsigned long	last_meal;
+	unsigned long	time_to_die;
 	int				meals;
 	t_data			*data;
 }	t_philo;
@@ -40,9 +42,11 @@ typedef struct s_data
 	int				tm_to_eat;
 	int				tm_to_sleep;
 	int				nb_meals;
+	int				death;
 	unsigned long	start;
 	t_philo			*philo;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	death_mutex;
 	pthread_mutex_t	print;
 }	t_data;
 

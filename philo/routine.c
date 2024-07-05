@@ -6,13 +6,13 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:28:32 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 12:56:10 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/07/05 14:57:25 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	get_sleap(t_data data, t_philo *philo)
+void	philos_sleap(t_data data, t_philo *philo)
 {
 	unsigned long	start_time;
 
@@ -21,7 +21,7 @@ void	get_sleap(t_data data, t_philo *philo)
 	ft_sleep(start_time, data.tm_to_sleep);
 }
 
-void	let_philo_eat(t_data data, t_philo *philo)
+void	philos_eat(t_data data, t_philo *philo)
 {
 	unsigned long	start_eat;
 
@@ -31,13 +31,30 @@ void	let_philo_eat(t_data data, t_philo *philo)
 	try_print(data, philo->id, "has taken a fork", get_time());
 	start_eat = get_time();
 	try_print(data, philo->id, "is eating", start_eat);
+	philo->last_meal = start_eat;
 	philo->meals++;
 	ft_sleep(start_eat, data.tm_to_eat);
 	pthread_mutex_unlock(&data.forks[philo->right_fork]);
 	pthread_mutex_unlock(&data.forks[philo->left_fork]);
 }
 
-void	let_philos_sleap(t_data data, int time)
+int	do_philos_die(t_data data, t_philo *philo)
+{
+	if (get_time() - philo->last_meal >= philo->time_to_die)
+	{
+		pthread_mutex_lock(&data.death_mutex);
+		if (data.death == 0)
+		{
+			data.death = 1;
+			try_print(data, philo->id, "died", get_time());
+		}
+		pthread_mutex_unlock(&data.death_mutex);
+		return (1);
+	}
+	return (0);
+}
+
+void	wait_philos_wait(t_data data, int time)
 {
 	int	i;
 
@@ -45,10 +62,7 @@ void	let_philos_sleap(t_data data, int time)
 	while (i < data.nb_philo)
 	{
 		if (data.philo[i].id % 2 == 0)
-		{
-			// printf("%d\n", data.philo[i].id);
 			ft_sleep(get_time(), time);
-		}
 		i++;
 	}
 }
@@ -60,13 +74,16 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	data = philo->data;
-	let_philos_sleap(*data, data->tm_to_eat / 2);
-	while (1)
+	wait_philos_wait(*data, data->tm_to_eat / 2);
+	while (data->death == 0)
 	{
-		let_philo_eat(*data, philo);
-		get_sleap(*data, philo);
-		try_print(*data, philo->id, "is thinking", get_time());
+		philos_eat(*data, philo);
 		if (data->nb_meals != -1 && philo->meals == data->nb_meals)
+			break ;
+		philos_sleap(*data, philo);
+		if (get_time() - philo->last_meal < philo->time_to_die)
+			try_print(*data, philo->id, "is thinking", get_time());
+		if (do_philos_die(*data, philo))
 			break ;
 	}
 	return (NULL);
