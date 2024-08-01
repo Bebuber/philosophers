@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:25:18 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 14:00:17 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/01 19:04:45 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,13 @@ void	init_philo(t_data *data, int i, t_philo *philo)
 	philo->id = i + 1;
 	philo->right_fork = i;
 	philo->left_fork = (i + 1) % data->nb_forks;
-	philo->dead = data->death;
+	philo->nb_meals = data->nb_meals;
 	philo->meals = 0;
 	philo->data = data;
 	philo->last_meal = 0;
 	philo->time_to_die = data->tm_to_die;
+	philo->time_to_eat = data->tm_to_eat;
+	philo->time_to_sleep = data->tm_to_sleep;
 }
 
 int	init_data(t_data *data, int argc, char **argv)
@@ -54,6 +56,7 @@ int	init_data(t_data *data, int argc, char **argv)
 	m_alloc(sizeof(pthread_mutex_t) * data->nb_forks);
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->death_mutex, NULL);
+	pthread_mutex_init(&data->meal_mutex, NULL);
 	while (i < data->nb_forks)
 		pthread_mutex_init(&data->forks[i++], NULL);
 	i = -1;

@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:02:13 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 15:15:24 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/01 20:15:18 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ int	special_case(t_data *data)
 	ft_sleep(get_time(), data->tm_to_die);
 	time = get_time() - start;
 	printf("%lu 1 died\n", time);
-	ft_exit(data);
+	ft_clean(data);
 	return (0);
 }
 
-void	ft_exit(t_data *data)
+void	ft_clean(t_data *data)
 {
 	int	i;
 
@@ -59,6 +59,7 @@ void	ft_exit(t_data *data)
 		pthread_mutex_destroy(&data->forks[i++]);
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->death_mutex);
+	pthread_mutex_destroy(&data->meal_mutex);
 	if (data->philo)
 		free(data->philo);
 	if (data->forks)
@@ -69,7 +70,7 @@ void	error(char *str, t_data *data)
 {
 	printf("%s", str);
 	if (data)
-		ft_exit(data);
+		ft_clean(data);
 	// system("leaks philo");
 	exit (1);
 }
@@ -86,7 +87,7 @@ int	main(int argc, char **argv)
 		return (special_case(&data));
 	if (init_threads(&data))
 		return (1);
-	ft_exit(&data);
+	ft_clean(&data);
 	// system("leaks philo");
 	return (0);
 }

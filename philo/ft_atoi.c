@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 12:07:22 by bebuber           #+#    #+#             */
-/*   Updated: 2024/07/05 11:04:44 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/01 19:57:19 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,3 @@ int	ft_atoi(const char *str)
 	}
 	return (numb * ngt);
 }
-
-//int	main(void)
-//{
-//	char str[] = "	--2143647";
-
-//	printf("%d", ft_atoi(str));
-//	return (0);
-//}
