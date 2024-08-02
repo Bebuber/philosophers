@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:28:32 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/01 20:18:27 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/02 18:26:07 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,9 @@ int	philos_eat(t_data *data, t_philo *philo)
 	if (try_print(data, philo, "has taken a fork", get_time()))
 		return (1);
 	start_eat = get_time();
+	pthread_mutex_lock(&data->meal_mutex);
 	philo->last_meal = start_eat;
+	pthread_mutex_unlock(&data->meal_mutex);
 	if (try_print(data, philo, "is eating", start_eat))
 		return (1);
 	philo->meals++;
@@ -87,9 +89,7 @@ void	*day(void *arg)
 	{
 		if (check_the_death(data))
 			return (NULL);
-		if (philos_eat(data, philo))
-			return (NULL);
-		if (philos_sleep(data, philo))
+		if (philos_eat(data, philo) || philos_sleep(data, philo))
 			return (NULL);
 		pthread_mutex_lock(&data->meal_mutex);
 		if (philo->nb_meals != -1 && philo->meals == philo->nb_meals)
@@ -113,14 +113,7 @@ int	init_threads(t_data *data)
 		if (pthread_create(&data->philo[i].thread, NULL, &day, &data->philo[i]))
 			return (1);
 	}
-	i = 0;
-	while (i++)
-	{
-		if (i == data->nb_philo)
-			i = 0;
-		if (check_philos_live(data, &data->philo[i]) || check_philos_full(data))
-			break ;
-	}
+	monitor_philos(data);
 	i = -1;
 	while (++i < data->nb_philo)
 	{

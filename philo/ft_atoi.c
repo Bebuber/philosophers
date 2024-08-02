@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 12:07:22 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/01 19:57:19 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/02 18:16:36 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,24 @@ int	if_number(const char str)
 	if (str >= '0' && str <= '9')
 		return (1);
 	return (0);
+}
+
+void	monitor_philos(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (1)
+	{
+		if (i == data->nb_philo)
+			i = 0;
+		if (check_philos_live(data, &data->philo[i]))
+			return ;
+		if (check_philos_full(data))
+			return ;
+		i++;
+	}
+	return ;
 }
 
 void	if_negative(const char *str, int *i, int *ngt)

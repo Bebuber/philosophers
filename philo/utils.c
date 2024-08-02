@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:28:31 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/01 20:13:54 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/02 18:34:29 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@ int	check_philos_live(t_data *data, t_philo *philo)
 	unsigned long	left_time;
 	unsigned long	last_meal;
 
+	pthread_mutex_lock(&data->meal_mutex);
 	last_meal = philo->last_meal;
+	pthread_mutex_unlock(&data->meal_mutex);
+	pthread_mutex_lock(&data->print);
 	if (last_meal)
 		left_time = get_time() - last_meal;
 	else
-	{
-		pthread_mutex_lock(&data->print);
 		left_time = get_time() - data->start;
-		pthread_mutex_unlock(&data->print);
-	}
+	pthread_mutex_unlock(&data->print);
 	if (left_time >= data->tm_to_die)
 	{
 		pthread_mutex_lock(&data->death_mutex);

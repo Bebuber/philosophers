@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 17:58:47 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/01 20:14:25 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/02 18:28:54 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,7 @@ int				init_threads(t_data *data);
 int				check_philos_live(t_data *data, t_philo *philo);
 int				check_death(t_data *data, t_philo *philo);
 int				check_the_death(t_data *data);
+void			monitor_philos(t_data *data);
+int				check_philos_full(t_data *data);
 
 #endif
