@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 12:07:22 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 18:06:06 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:44:42 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	monitor_philos(t_data *data)
 		if (check_philos_full(data))
 			return ;
 		i++;
+		usleep(100);
 	}
 	return ;
 }

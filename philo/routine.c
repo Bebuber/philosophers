@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:28:32 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 18:05:27 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:54:18 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,9 @@ int	philos_eat(t_data *data, t_philo *philo)
 	pthread_mutex_unlock(&data->meal_mutex);
 	if (try_print(data, philo, "is eating", start_eat))
 		return (unlock_forks(data, philo), 1);
+	pthread_mutex_lock(&data->meal_mutex);
 	philo->meals++;
+	pthread_mutex_unlock(&data->meal_mutex);
 	if (ft_sleep(start_eat, philo->time_to_eat, data))
 		return (unlock_forks(data, philo), 1);
 	pthread_mutex_unlock(&data->forks[philo->right_fork]);
@@ -58,8 +60,8 @@ int	check_philos_full(t_data *data)
 	pthread_mutex_lock(&data->meal_mutex);
 	while (i < philo->nb_philos)
 	{
-		if ((philo->nb_meals == -1) || (philo[i].nb_meals != -1 \
-		&& philo[i].meals != philo[i].nb_meals))
+		if ((data->nb_meals == -1) || (data->nb_meals != -1 \
+		&& philo[i].meals != data->nb_meals))
 		{
 			pthread_mutex_unlock(&data->meal_mutex);
 			return (0);
@@ -94,6 +96,7 @@ void	*day(void *arg)
 		pthread_mutex_unlock(&data->meal_mutex);
 		if (try_print(data, philo, "is thinking", get_time()))
 			return (NULL);
+		usleep(100);
 	}
 	return (NULL);
 }

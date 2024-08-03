@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:02:13 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 17:37:27 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:40:18 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ void	error(char *str, t_data *data)
 	printf("%s", str);
 	if (data)
 		ft_clean(data);
-	// system("leaks philo");
 	exit (1);
 }
 
@@ -88,6 +87,5 @@ int	main(int argc, char **argv)
 	if (init_threads(&data))
 		return (1);
 	ft_clean(&data);
-	// system("leaks philo");
 	return (0);
 }
