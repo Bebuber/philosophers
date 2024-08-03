@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:28:31 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 18:17:23 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:33:43 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int	ft_sleep(unsigned long start, unsigned long time, t_data *data)
 	{
 		if (check_the_death(data))
 			return (1);
-		usleep (time / 10);
+		usleep (100);
 	}
 	return (0);
 }
