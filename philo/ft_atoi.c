@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 12:07:22 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/02 18:16:36 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:06:06 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,12 @@ int	if_number(const char str)
 	if (str >= '0' && str <= '9')
 		return (1);
 	return (0);
+}
+
+void	unlock_forks(t_data *data, t_philo *philo)
+{
+	pthread_mutex_unlock(&data->forks[philo->right_fork]);
+	pthread_mutex_unlock(&data->forks[philo->left_fork]);
 }
 
 void	monitor_philos(t_data *data)

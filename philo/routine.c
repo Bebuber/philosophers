@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:28:32 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/02 18:26:07 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:05:27 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,8 @@ int	philos_sleep(t_data *data, t_philo *philo)
 	start_time = get_time();
 	if (try_print(data, philo, "is sleeping", start_time))
 		return (1);
-	while (get_time() - start_time < philo->time_to_sleep)
-	{
-		if (check_the_death(data))
-			return (1);
-		ft_sleep(get_time(), 5);
-	}
+	if (ft_sleep(start_time, philo->time_to_sleep, data))
+		return (1);
 	return (0);
 }
 
@@ -34,18 +30,19 @@ int	philos_eat(t_data *data, t_philo *philo)
 
 	pthread_mutex_lock(&data->forks[philo->right_fork]);
 	if (try_print(data, philo, "has taken a fork", get_time()))
-		return (1);
+		return (pthread_mutex_unlock(&data->forks[philo->right_fork]), 1);
 	pthread_mutex_lock(&data->forks[philo->left_fork]);
 	if (try_print(data, philo, "has taken a fork", get_time()))
-		return (1);
+		return (unlock_forks(data, philo), 1);
 	start_eat = get_time();
 	pthread_mutex_lock(&data->meal_mutex);
 	philo->last_meal = start_eat;
 	pthread_mutex_unlock(&data->meal_mutex);
 	if (try_print(data, philo, "is eating", start_eat))
-		return (1);
+		return (unlock_forks(data, philo), 1);
 	philo->meals++;
-	ft_sleep(start_eat, philo->time_to_eat);
+	if (ft_sleep(start_eat, philo->time_to_eat, data))
+		return (unlock_forks(data, philo), 1);
 	pthread_mutex_unlock(&data->forks[philo->right_fork]);
 	pthread_mutex_unlock(&data->forks[philo->left_fork]);
 	return (0);
@@ -59,7 +56,7 @@ int	check_philos_full(t_data *data)
 	philo = data->philo;
 	i = 0;
 	pthread_mutex_lock(&data->meal_mutex);
-	while (i < data->nb_philo)
+	while (i < philo->nb_philos)
 	{
 		if ((philo->nb_meals == -1) || (philo[i].nb_meals != -1 \
 		&& philo[i].meals != philo[i].nb_meals))
@@ -82,8 +79,8 @@ void	*day(void *arg)
 	data = philo->data;
 	if (philo->id % 2 == 0)
 	{
-		try_print(data, philo, "is thinking", get_time());
-		ft_sleep(get_time(), philo->time_to_eat / 2);
+		if (start_with_thinking(data, philo))
+			return (NULL);
 	}
 	while (1)
 	{
@@ -109,7 +106,7 @@ int	init_threads(t_data *data)
 	data->start = get_time();
 	while (++i < data->nb_philo)
 	{
-		ft_sleep(get_time(), 1);
+		usleep(100);
 		if (pthread_create(&data->philo[i].thread, NULL, &day, &data->philo[i]))
 			return (1);
 	}

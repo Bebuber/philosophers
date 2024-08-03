@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 17:58:47 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/02 18:28:54 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:05:58 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_philo
 	unsigned long	time_to_die;
 	unsigned long	time_to_eat;
 	unsigned long	time_to_sleep;
+	int				nb_philos;
 	int				meals;
 	t_data			*data;
 }	t_philo;
@@ -62,7 +63,7 @@ void			error(char *str, t_data *data);
 unsigned long	get_time(void);
 int				try_print(t_data *data, t_philo *philo, char *str, \
 unsigned long start);
-void			ft_sleep(unsigned long start, unsigned long time);
+int				ft_sleep(unsigned long start, unsigned long time, t_data *data);
 int				init_data(t_data *data, int argc, char **argv);
 int				init_threads(t_data *data);
 int				check_philos_live(t_data *data, t_philo *philo);
@@ -70,5 +71,7 @@ int				check_death(t_data *data, t_philo *philo);
 int				check_the_death(t_data *data);
 void			monitor_philos(t_data *data);
 int				check_philos_full(t_data *data);
+int				start_with_thinking(t_data *data, t_philo *philo);
+void 			unlock_forks(t_data *data, t_philo *philo);
 
 #endif

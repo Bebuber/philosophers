@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:02:13 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/02 18:37:37 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 17:37:27 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	special_case(t_data *data)
 	start = get_time();
 	time = get_time() - start;
 	printf("%lu 1 has taken a fork\n", time);
-	ft_sleep(get_time(), data->tm_to_die);
+	usleep(data->tm_to_die * 1000);
 	time = get_time() - start;
 	printf("%lu 1 died\n", time);
 	ft_clean(data);
@@ -71,7 +71,7 @@ void	error(char *str, t_data *data)
 	printf("%s", str);
 	if (data)
 		ft_clean(data);
-	system("leaks philo");
+	// system("leaks philo");
 	exit (1);
 }
 
@@ -88,6 +88,6 @@ int	main(int argc, char **argv)
 	if (init_threads(&data))
 		return (1);
 	ft_clean(&data);
-	system("leaks philo");
+	// system("leaks philo");
 	return (0);
 }

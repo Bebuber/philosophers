@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:25:18 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/01 19:04:45 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 17:43:09 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	init_philo(t_data *data, int i, t_philo *philo)
 	philo->time_to_die = data->tm_to_die;
 	philo->time_to_eat = data->tm_to_eat;
 	philo->time_to_sleep = data->tm_to_sleep;
+	philo->nb_philos = data->nb_philo;
 }
 
 int	init_data(t_data *data, int argc, char **argv)
@@ -62,5 +63,17 @@ int	init_data(t_data *data, int argc, char **argv)
 	i = -1;
 	while (++i < data->nb_philo)
 		init_philo(data, i, &data->philo[i]);
+	return (0);
+}
+
+int	start_with_thinking(t_data *data, t_philo *philo)
+{
+	unsigned long	start_time;
+
+	start_time = get_time();
+	if (try_print(data, philo, "is thinking", start_time))
+		return (1);
+	if (ft_sleep(start_time, philo->time_to_eat / 2, data))
+		return (1);
 	return (0);
 }

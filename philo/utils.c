@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:28:31 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/02 18:34:29 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:06:29 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	check_philos_live(t_data *data, t_philo *philo)
 	else
 		left_time = get_time() - data->start;
 	pthread_mutex_unlock(&data->print);
-	if (left_time >= data->tm_to_die)
+	if (left_time > data->tm_to_die)
 	{
 		pthread_mutex_lock(&data->death_mutex);
 		if (data->death == 0)
@@ -76,8 +76,13 @@ unsigned long	get_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	ft_sleep(unsigned long start, unsigned long time)
+int	ft_sleep(unsigned long start, unsigned long time, t_data *data)
 {
 	while (get_time() - start < time)
+	{
+		if (check_the_death(data))
+			return (1);
 		usleep (time / 10);
+	}
+	return (0);
 }
