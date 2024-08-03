@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:28:31 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 18:06:29 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/03 18:17:23 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,9 @@ int	try_print(t_data *data, t_philo *philo, char *str, unsigned long start)
 	unsigned long	time;
 	int				id;
 
-	if (check_the_death(data))
-		return (1);
 	pthread_mutex_lock(&data->print);
+	if (check_the_death(data))
+		return (pthread_mutex_unlock(&data->print), 1);
 	id = philo->id;
 	time = start - data->start;
 	printf("%lu %d %s\n", time, id, str);
