@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 17:25:18 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 17:43:09 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/06 18:13:00 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,14 @@ int	init_data(t_data *data, int argc, char **argv)
 	int	i;
 
 	i = 0;
-	data->nb_philo = atoi(argv[1]);
+	data->nb_philo = ft_atoi(argv[1]);
 	data->nb_forks = data->nb_philo;
-	data->tm_to_die = atoi(argv[2]);
-	data->tm_to_eat = atoi(argv[3]);
-	data->tm_to_sleep = atoi(argv[4]);
+	data->tm_to_die = ft_atoi(argv[2]);
+	data->tm_to_eat = ft_atoi(argv[3]);
+	data->tm_to_sleep = ft_atoi(argv[4]);
 	data->death = 0;
 	if (argc == 6)
-		data->nb_meals = atoi(argv[5]);
+		data->nb_meals = ft_atoi(argv[5]);
 	else
 		data->nb_meals = -1;
 	data->philo = (t_philo *)m_alloc(sizeof(t_philo) * data->nb_philo);

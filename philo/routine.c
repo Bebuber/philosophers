@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:28:32 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 18:54:18 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/06 18:35:48 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ void	*day(void *arg)
 		pthread_mutex_unlock(&data->meal_mutex);
 		if (try_print(data, philo, "is thinking", get_time()))
 			return (NULL);
-		usleep(100);
 	}
 	return (NULL);
 }

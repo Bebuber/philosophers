@@ -6,7 +6,7 @@
 /*   By: bebuber <bebuber@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 17:58:47 by bebuber           #+#    #+#             */
-/*   Updated: 2024/08/03 18:56:46 by bebuber          ###   ########.fr       */
+/*   Updated: 2024/08/06 18:27:12 by bebuber          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,6 @@ void			monitor_philos(t_data *data);
 int				check_philos_full(t_data *data);
 int				start_with_thinking(t_data *data, t_philo *philo);
 void			unlock_forks(t_data *data, t_philo *philo);
+int				ft_atoi(const char *str);
 
 #endif
