@@ -70,25 +70,82 @@ timestamp_in_ms  philosopher_id  action
 ```
 
 ```
-0       1 is thinking
-0       2 is thinking
-1       1 has taken a fork
-1       1 has taken a fork
-1       1 is eating
-201     1 is sleeping
+0    1 is thinking
+0    3 is thinking
+1    1 has taken a fork
+1    1 has taken a fork
+1    1 is eating
+201  1 is sleeping
 ...
-800     3 died
+800  3 died
 ```
 
 ---
 
 ## Implementation
 
-- One **thread** per philosopher.
-- One **mutex** per fork.
-- A dedicated **monitor** checks timestamps to detect death without data races.
-- `gettimeofday` is used for millisecond-precision timing.
-- Careful mutex ordering to avoid **deadlock** (odd/even philosophers pick up forks in opposite order).
+### Structure
+
+```
+philo/
+├── philo.h       # Structs, prototypes, includes
+├── main.c        # Entry point, argument validation, cleanup
+├── init.c        # Data and philosopher initialisation
+├── routine.c     # Philosopher lifecycle: eat, sleep, think — plus thread creation
+├── utils.c       # Timing, death detection, print guard
+└── ft_atoi.c     # Argument parsing utilities
+```
+
+### How it works
+
+**One thread per philosopher.** Each runs the `day()` routine — a loop of eating, sleeping, and thinking until death is detected or the meal limit is reached.
+
+**One mutex per fork.** Philosophers lock their right fork first, then their left. Forks are released immediately after eating.
+
+**Deadlock prevention via staggering.** Even-numbered philosophers delay by `time_to_eat / 2` before their first fork grab (`start_with_thinking`). This gives odd philosophers a head start and prevents all philosophers from grabbing one fork simultaneously and deadlocking.
+
+**Precise sleeping.** Instead of a raw `usleep`, `ft_sleep` polls `gettimeofday` in a tight loop with 100µs granularity and exits early if a death is detected — preventing threads from oversleeping past their time window.
+
+**Death detection without races.** A dedicated monitor (`monitor_philos`) runs in the main thread after all philosopher threads are created. It continuously checks each philosopher's `last_meal` timestamp under `meal_mutex`, and prints the death message and sets `data->death` under `death_mutex` + `print` mutex to prevent interleaved output.
+
+**Print guard.** `try_print` checks for death under the print mutex before printing, ensuring no state messages are logged after a philosopher has died.
+
+### Key data structures
+
+```c
+typedef struct s_philo
+{
+    int             id;
+    pthread_t       thread;
+    int             right_fork;   // index into data->forks[]
+    int             left_fork;    // index into data->forks[]
+    int             nb_meals;     // meal limit (-1 if unlimited)
+    int             meals;        // meals eaten so far
+    unsigned long   last_meal;    // timestamp of last meal start (ms)
+    unsigned long   time_to_die;
+    unsigned long   time_to_eat;
+    unsigned long   time_to_sleep;
+    int             nb_philos;
+    t_data          *data;        // back-pointer to shared state
+}   t_philo;
+
+typedef struct s_data
+{
+    int             nb_philo;
+    int             nb_forks;
+    unsigned long   tm_to_die;
+    int             tm_to_eat;
+    int             tm_to_sleep;
+    int             nb_meals;
+    int             death;        // set to 1 when a philosopher dies
+    unsigned long   start;        // simulation start timestamp
+    t_philo         *philo;
+    pthread_mutex_t *forks;
+    pthread_mutex_t meal_mutex;   // protects last_meal and meals count
+    pthread_mutex_t death_mutex;  // protects data->death flag
+    pthread_mutex_t print;        // ensures non-interleaved output
+}   t_data;
+```
 
 ---
 
@@ -106,8 +163,9 @@ timestamp_in_ms  philosopher_id  action
 ## Notes
 
 - Written in compliance with the **42 Norm**.
-- No `usleep` drift compensation needed if sleep precision is handled carefully.
-- Tested with valgrind (`--tool=helgrind`) for data race detection.
+- Uses `gettimeofday` for millisecond-precision timing.
+- `ft_sleep` uses a polling loop rather than raw `usleep` to avoid timing drift and enable early exit on death.
+- The 1-philosopher edge case is handled separately: the philosopher picks up one fork, waits `time_to_die` ms, and dies.
 
 ---
 
